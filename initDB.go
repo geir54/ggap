@@ -3,8 +3,7 @@ package main
 import (
 	"database/sql"
 	"log"
-
-	"github.com/coopernurse/gorp"
+	"gopkg.in/gorp.v1"
 	_ "github.com/lib/pq"
 )
 
@@ -23,7 +22,7 @@ func populateLocations(locationsMap *gorp.DbMap) {
 }
 
 func initDB() *gorp.DbMap {
-	db, err := sql.Open("postgres", "postgres://yourPostgresDatabaseLogin")
+	db, err := sql.Open("postgres", "postgres://postgres:123456@127.0.0.1:5432/postgres?sslmode=disable")
 
 	if err != nil {
 		log.Fatal(err)

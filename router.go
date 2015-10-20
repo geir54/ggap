@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/coopernurse/gorp"
+	"gopkg.in/gorp.v1"
 	"github.com/gorilla/mux"
 )
 
@@ -28,7 +28,7 @@ func fetchLocations(dbMap *gorp.DbMap) []Location {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	return locations
 }
 
@@ -66,10 +66,10 @@ func initRouter(dbMap *gorp.DbMap) *mux.Router {
 	AddStaticRoutes(r, "/partials/", "public/partials",
 		"/scripts/", "public/scripts", "/styles/", "public/styles",
 		"/images/", "public/images")
-		
+
 	//Add the locations route API with makeLocationsRoute
 	r.HandleFunc("/locations", makeLocationsRoute(dbMap))
-	
+
 	//Serve all other requests with index.html, and ultimately the front-end
 	//Angular.js app.
 	r.PathPrefix("/").HandlerFunc(indexRoute)
