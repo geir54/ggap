@@ -16,7 +16,7 @@ func FileServerRouteG(m *mux.Router, path, dir string) {
 }
 
 func indexRoute(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "views/index.html")
+	http.ServeFile(w, r, "public/views/index.html")
 }
 
 //fetchLocations takes in a GORP DbMap and fetches all locations in the
