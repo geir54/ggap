@@ -37,7 +37,13 @@ func initDB() *gorp.DbMap {
 	locationsTable.ColMap("Lat").SetNotNull(true)
 	locationsTable.ColMap("Lng").SetNotNull(true)
 
-	err = dbMap.DropTablesIfExists()
+	userTable := dbMap.AddTableWithName(User{}, "users").SetKeys(true, "Id")
+	userTable.ColMap("Email").SetNotNull(true).SetUnique(true)
+	userTable.ColMap("Username").SetNotNull(true).SetUnique(true)
+	userTable.ColMap("Password").SetNotNull(true)
+	userTable.ColMap("Salt").SetNotNull(true)
+
+	err = dbMap.DropTablesIfExists() // TODO: Remove
 	if err != nil {
 		log.Fatal(err)
 	}
