@@ -1,25 +1,46 @@
-<!-- Static navbar -->
-   <nav class="navbar navbar-default navbar-static-top">
-     <div class="container">
-       <div class="navbar-header">
-         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-           <span class="sr-only">Toggle navigation</span>
-           <span class="icon-bar"></span>
-           <span class="icon-bar"></span>
-           <span class="icon-bar"></span>
-         </button>
-         <a class="navbar-brand" href="#">Project name</a>
-       </div>
-       <div id="navbar" class="navbar-collapse collapse">
-         <ul class="nav navbar-nav">
-           <li class="active"><a href="/">Home</a></li>
-           <li><a href="#about">About</a></li>
-           <li><a href="#contact">Contact</a></li>
+<nav class="navbar navbar-default navbar-static-top" data-ng-controller="HeaderController">
+ <div class="container">
+   <div class="navbar-header">
+     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+       <span class="sr-only">Toggle navigation</span>
+       <span class="icon-bar"></span>
+       <span class="icon-bar"></span>
+       <span class="icon-bar"></span>
+     </button>
+     <a class="navbar-brand" href="#">Project name</a>
+   </div>
+   <div id="navbar" class="navbar-collapse collapse">
+     <ul class="nav navbar-nav">
+       <li class="active"><a href="/">Home</a></li>
+       <li><a href="#about">About</a></li>
+       <li><a href="#contact">Contact</a></li>
+     </ul>
+     <ul class="nav navbar-nav navbar-right" data-ng-hide="authentication.user">
+       <li class="active"><a href="./signup">Sign up<span class="sr-only">(current)</span></a></li>
+       <li><a href="./login">Sign in</a></li>
+     </ul>
+     <ul class="nav navbar-nav navbar-right" data-ng-show="authentication.user">
+       <li class="dropdown">
+         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+           <span data-ng-bind="authentication.user.Username"></span> <b class="caret"></b>
+         </a>
+         <ul class="dropdown-menu">
+           <li>
+             <a href="/#!/settings/profile">Edit Profile</a>
+           </li>
+           <li>
+             <a href="/#!/settings/accounts">Manage Social Accounts</a>
+           </li>
+           <li data-ng-show="authentication.user.provider === 'local'">
+             <a href="/#!/settings/password">Change Password</a>
+           </li>
+           <li class="divider"></li>
+           <li>
+             <a href="/auth/signout">Signout</a>
+           </li>
          </ul>
-         <ul class="nav navbar-nav navbar-right">
-           <li class="active"><a href="./signup">Sign up<span class="sr-only">(current)</span></a></li>
-           <li><a href="./login">Sign in</a></li>
-         </ul>
-       </div><!--/.nav-collapse -->
-     </div>
-   </nav>
+       </li>
+     </ul>
+   </div><!--/.nav-collapse -->
+ </div>
+</nav>
