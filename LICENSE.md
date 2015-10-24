@@ -1,6 +1,8 @@
 The MIT License (MIT)
 
 Copyright (c) 2015 Andrew Haskell
+Copyright (c) 2015 MEAN.JS contributors
+Copyright (c) 2015 geir54
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
