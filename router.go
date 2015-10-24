@@ -109,21 +109,33 @@ func AddStaticRoutes(m *mux.Router, pathsAndDirs ...string) {
 	}
 }
 
+func serveSingle(filename string) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+			http.ServeFile(w, r, filename)
+	}
+}
+
 //initRouter takes in a GORP DbMap and initializes the router's routes while
 //using the DbMap to handle database functionality.
 func initRouter(dbMap *gorp.DbMap) *mux.Router {
 	r := mux.NewRouter()
 
 	//Add static routes for the public directory
-	AddStaticRoutes(r, "/partials/", "public/partials",
-		"/scripts/", "public/scripts", "/styles/", "public/styles",
-		"/images/", "public/images")
+	AddStaticRoutes(r, "/lib/", "public/lib",
+		"/modules/", "public/modules")
+
+	r.HandleFunc("/robots.txt", serveSingle("public/robots.txt"))
+	r.HandleFunc("/application.js", serveSingle("public/application.js"))
+	r.HandleFunc("/config.js", serveSingle("public/config.js"))
+	r.HandleFunc("/config.js", serveSingle("public/humans.txt"))
 
 	//Add the locations route API with makeLocationsRoute
 	r.HandleFunc("/locations", makeLocationsRoute(dbMap))
 
 	r.HandleFunc("/auth/signup", HandleSignup(dbMap)).Methods("POST")
 	r.HandleFunc("/auth/signin", HandleSignin(dbMap)).Methods("POST")
+
+
 
 	//Serve all other requests with index.html, and ultimately the front-end
 	//Angular.js app.
