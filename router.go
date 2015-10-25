@@ -44,7 +44,6 @@ func indexRoute(dbMap *gorp.DbMap) func(http.ResponseWriter, *http.Request) {
 			user = Response{User : "\"\""}
 		} else {
 			dbUser.Password = "" // Not needed anymore
-			dbUser.Salt = ""
 
 			user = Response{User : dbUser.JSON()}
 		}
@@ -122,7 +121,7 @@ func HandleSignin(dbMap *gorp.DbMap) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		if (dbUser.Password != user.Password) {
+		if (!dbUser.checkPassword(user.Password)) {
 				AngularReturnError(w, "Wrong username or password")
 				return
 		}
@@ -137,7 +136,6 @@ func HandleSignin(dbMap *gorp.DbMap) func(http.ResponseWriter, *http.Request) {
 
 		dbUser.Password = "" // Not needed anymore
 		user.Password = ""
-		user.Salt = ""
 
 		fmt.Fprintf(w, "%s", dbUser.JSON())
 	}
