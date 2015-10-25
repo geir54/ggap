@@ -8,9 +8,9 @@ import (
 
 type User struct {
 	Id   int
-	Email string
-	Username string
-	Password string
+	Email string `json:"email"`
+	Username string	`json:"username"`
+	Password string	`json:"password"`
 	Salt string
 }
 

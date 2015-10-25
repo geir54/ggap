@@ -6,18 +6,54 @@ import (
 	"log"
 	"net/http"
 	//"html"
+	"text/template"
 
 	"gopkg.in/gorp.v1"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 )
+
+var store = sessions.NewCookieStore([]byte("something-very-secret"))
 
 func FileServerRouteG(m *mux.Router, path, dir string) {
 	m.PathPrefix(path).Handler(
 		http.StripPrefix(path, http.FileServer(http.Dir(dir))))
 }
 
-func indexRoute(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "public/views/index.html")
+func indexRoute(dbMap *gorp.DbMap) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		t, err := template.ParseFiles("public/views/index.html")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		session, err := store.Get(r, "sessions")
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		type Response struct {
+		    User   string
+		}
+		var user Response
+
+		dbUser := initUser()
+		err = dbMap.SelectOne(dbUser, "select * from users where Id=$1", session.Values["id"])
+		if (err != nil) {
+			user = Response{User : "\"\""}
+		} else {
+			dbUser.Password = "" // Not needed anymore
+			dbUser.Salt = ""
+
+			user = Response{User : dbUser.JSON()}
+		}
+
+	  err =	t.Execute(w, user)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }
 
 //fetchLocations takes in a GORP DbMap and fetches all locations in the
@@ -80,7 +116,7 @@ func HandleSignin(dbMap *gorp.DbMap) func(http.ResponseWriter, *http.Request) {
 		}
 
 		dbUser := initUser()
-		err = dbMap.SelectOne(dbUser, "select * from users where Username=$1", user.Username)
+		err = dbMap.SelectOne(dbUser, "select * from users where username=$1", user.Username)
 		if (err != nil) {
 			AngularReturnError(w, "Wrong username or password")
 			return
@@ -90,6 +126,14 @@ func HandleSignin(dbMap *gorp.DbMap) func(http.ResponseWriter, *http.Request) {
 				AngularReturnError(w, "Wrong username or password")
 				return
 		}
+
+		session, err := store.Get(r, "sessions")
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		session.Values["id"] = dbUser.Id
+		session.Save(r, w)
 
 		dbUser.Password = "" // Not needed anymore
 		user.Password = ""
@@ -135,11 +179,9 @@ func initRouter(dbMap *gorp.DbMap) *mux.Router {
 	r.HandleFunc("/auth/signup", HandleSignup(dbMap)).Methods("POST")
 	r.HandleFunc("/auth/signin", HandleSignin(dbMap)).Methods("POST")
 
-
-
 	//Serve all other requests with index.html, and ultimately the front-end
 	//Angular.js app.
-	r.PathPrefix("/").HandlerFunc(indexRoute)
+	r.PathPrefix("/").HandlerFunc(indexRoute(dbMap))
 
 	return r
 }
