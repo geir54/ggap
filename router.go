@@ -55,34 +55,6 @@ func indexRoute(dbMap *gorp.DbMap) func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-//fetchLocations takes in a GORP DbMap and fetches all locations in the
-//locations database table into a Location slice
-func fetchLocations(dbMap *gorp.DbMap) []Location {
-	var locations []Location
-
-	_, err := dbMap.Select(&locations, "SELECT * FROM locations")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return locations
-}
-
-//makeLocationsRoute takes in a GORP DbMap and makes a route that uses that
-//DbMap to fetch all locations in the locations table and serve them as JSON.
-func makeLocationsRoute(dbMap *gorp.DbMap) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		locations := fetchLocations(dbMap)
-
-		locationsJSON, err := json.Marshal(locations)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Fprintf(w, "%s", locationsJSON)
-	}
-}
-
 func AngularReturnError(w http.ResponseWriter, err string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusBadRequest)
@@ -170,9 +142,6 @@ func initRouter(dbMap *gorp.DbMap) *mux.Router {
 	r.HandleFunc("/application.js", serveSingle("public/application.js"))
 	r.HandleFunc("/config.js", serveSingle("public/config.js"))
 	r.HandleFunc("/config.js", serveSingle("public/humans.txt"))
-
-	//Add the locations route API with makeLocationsRoute
-	r.HandleFunc("/locations", makeLocationsRoute(dbMap))
 
 	r.HandleFunc("/auth/signup", HandleSignup(dbMap)).Methods("POST")
 	r.HandleFunc("/auth/signin", HandleSignin(dbMap)).Methods("POST")
