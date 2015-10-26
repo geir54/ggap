@@ -22,10 +22,10 @@ func initDB() *gorp.DbMap {
 	userTable.ColMap("Password").SetNotNull(true)
 	userTable.ColMap("Salt").SetNotNull(true)
 
-	err = dbMap.DropTablesIfExists() // TODO: Remove
-	if err != nil {
-		log.Fatal(err)
-	}
+	// err = dbMap.DropTablesIfExists() // TODO: Remove
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	err = dbMap.CreateTablesIfNotExists()
 	if err != nil {

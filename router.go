@@ -113,6 +113,21 @@ func HandleSignin(dbMap *gorp.DbMap) func(http.ResponseWriter, *http.Request) {
 	}
 }
 
+func HandleSignout() func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+			session, err := store.Get(r, "sessions")
+			if err != nil {
+				log.Println(err)
+				return
+			}
+
+			delete(session.Values, "id")
+			session.Save(r, w)
+
+			http.Redirect(w, r, "/", http.StatusFound)
+	}
+}
+
 //AddStaticRoutes takes in a Gorilla mux Router and an alternating set of URL
 //paths and directory paths and for each pair of strings, the router is given a
 //FileServer Handler where the first string is the URL path and the second
@@ -145,6 +160,7 @@ func initRouter(dbMap *gorp.DbMap) *mux.Router {
 
 	r.HandleFunc("/auth/signup", HandleSignup(dbMap)).Methods("POST")
 	r.HandleFunc("/auth/signin", HandleSignin(dbMap)).Methods("POST")
+	r.HandleFunc("/auth/signout", HandleSignout())
 
 	//Serve all other requests with index.html, and ultimately the front-end
 	//Angular.js app.
