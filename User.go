@@ -1,7 +1,6 @@
 package main
 
 import (
-	"gopkg.in/gorp.v1"
 	"encoding/json"
 	"log"
 	"golang.org/x/crypto/pbkdf2"
@@ -23,7 +22,12 @@ func initUser() *User {
 	return &User{}
 }
 
-func (user *User) save(DbMap *gorp.DbMap) error {
+// interface used for testing
+type iDbMap interface {
+       Insert(list ...interface{}) error
+}
+
+func (user *User) save(DbMap iDbMap) error {
 
 	// Generate random salt
 	salt := make([]byte, 10)
