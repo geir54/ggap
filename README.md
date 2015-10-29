@@ -1,5 +1,6 @@
 GGAP
 =============
+[![Build Status](https://travis-ci.org/geir54/ggap.svg?branch=master)](https://travis-ci.org/geir54/ggap)
 
 GGAP is a full-stack (Golang, Gorilla, Angular, Postgres) open-source solution. This will provide a common platform for building web apps using golang.
 
